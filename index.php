@@ -61,6 +61,8 @@ $app->post('/webhook', function ($request, $response) use ($bot, $pass_signature
                 $getprofile = $bot->getProfile($userId);
                 $profile = $getprofile->getJSONDecodedBody();
                 $messageFromUser = strtolower($event['message']['text']);
+                require 'http://arizalmhmd5.000webhostapp.com/logic.php';
+                $AI = get_data($userId, $messageFromUser);
                 $a = (explode(' ', $messageFromUser));
                 if ($a[0] == 'apakah') {
                     $result = $bot->replyText($event['replyToken'], (rand(0, 1)) ? "iya" : "tidak");
@@ -71,7 +73,12 @@ $app->post('/webhook', function ($request, $response) use ($bot, $pass_signature
                     }
                 } else {
                     if ($event['message']['type'] == 'text') {
-                        
+                        if ($AI['kategori'] == 'thanks') {
+                            $replyMessage = new StickerMessageBuilder($AI['jawab'][0], $AI['jawab'][1]);
+                            $result = $bot->replyMessage($event['replyToken'], $replyMessage);
+                        } else {
+                            $result = $bot->replyText($event['replyToken'], $AI['jawab']);
+                        }
                     }
                 }
             }
